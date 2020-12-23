@@ -22,3 +22,8 @@ untangleGame.createRandomCircles = function(width, height) {
     }
 };
 
+untangleGame.Line = function(startPoint, endPoint, thickness) {
+    this.startPoint = startPoint;
+    this.endPoint = endPoint;
+    this.thickness = thickness;
+}
