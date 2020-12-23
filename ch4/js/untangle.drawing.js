@@ -14,7 +14,8 @@ untangleGame.drawCircle = function(x, y, radius) {
     ctx.fill();
 };
 
-untangleGame.drawLine = function(ctx, x1, y1, x2, y2, thickness) {
+untangleGame.drawLine = function(x1, y1, x2, y2, thickness) {
+    var ctx = untangleGame.ctx;
     ctx.beginPath();
     ctx.moveTo(x1,y1);
     ctx.lineTo(x2,y2);
@@ -31,8 +32,32 @@ untangleGame.connectCircles = function() {
         var startPoint = untangleGame.circles[i];
         for(var j=0;j<i;j++) {
             var endPoint = untangleGame.circles[j];
-            untangleGame.drawLine(untangleGame.ctx, startPoint.x, startPoint.y, endPoint.x, endPoint.y, 1);
+            untangleGame.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 1);
             untangleGame.lines.push(new untangleGame.Line(startPoint, endPoint, untangleGame.thinLineThickness));
         }
+    }
+};
+
+untangleGame.clear = function() {
+    var ctx = untangleGame.ctx;
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+};
+
+untangleGame.drawAllLines = function(){
+    // draw all remembered lines
+    for(var i=0;i<untangleGame.lines.length;i++) {
+        var line = untangleGame.lines[i];
+        var startPoint = line.startPoint;
+        var endPoint = line.endPoint;
+        var thickness = line.thickness;
+        untangleGame.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, thickness);
+    }
+};
+
+untangleGame.drawAllCircles = function() {
+    // draw all remembered circles
+    for(var i=0;i<untangleGame.circles.length;i++) {
+        var circle = untangleGame.circles[i];
+        untangleGame.drawCircle(circle.x, circle.y, circle.radius);
     }
 };
