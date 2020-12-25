@@ -20,5 +20,18 @@ $(function(){
         websocketGame.socket.onmessage = function(e) {
             console.log(e.data);
         };
+
+        $("#send").click(sendMessage);
+        $("#chat-input").keypress(function(event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            var message = $("#chat-input").val();
+            websocketGame.socket.send(message);
+            $("#chat-input").val("");
+        }
     }
 });

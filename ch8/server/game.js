@@ -17,6 +17,7 @@ Room.prototype.addUser = function(user){
         console.log('A connection left.');
         room.removeUser(user);
     }
+    this.handleOnUserMessage(user);
 };
 
 Room.prototype.removeUser = function(user) {
@@ -33,6 +34,14 @@ Room.prototype.sendAll = function(message) {
         this.users[i].socket.send(message);
     }
 };
+
+Room.prototype.handleOnUserMessage = function(user) {
+    var room = this;
+    user.socket.on("message", function(message) {
+        console.log("Receive message from " + user.id + ": " + message);
+    });
+};
+
 
 module.exports.User = User;
 module.exports.Room = Room;
