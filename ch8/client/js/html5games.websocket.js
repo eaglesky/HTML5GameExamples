@@ -15,5 +15,10 @@ $(function(){
         websocketGame.socket.onclose = function(e) {
             console.log('WebSocket connection closed.');
         };
+
+        // on message event
+        websocketGame.socket.onmessage = function(e) {
+            console.log(e.data);
+        };
     }
 });
