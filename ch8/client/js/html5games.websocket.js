@@ -19,6 +19,7 @@ $(function(){
         // on message event
         websocketGame.socket.onmessage = function(e) {
             console.log(e.data);
+            $("#chat-history").append("<li>"+e.data+"</li>");
         };
 
         $("#send").click(sendMessage);

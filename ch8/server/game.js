@@ -39,6 +39,10 @@ Room.prototype.handleOnUserMessage = function(user) {
     var room = this;
     user.socket.on("message", function(message) {
         console.log("Receive message from " + user.id + ": " + message);
+
+        // send to all users in room.
+        var msg = "User " + user.id + " said: " + message;
+        room.sendAll(msg);
     });
 };
 
