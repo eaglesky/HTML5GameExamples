@@ -4,6 +4,9 @@ var websocketGame = {
     // the starting point of next line drawing.
     startX : 0,
     startY : 0,
+    // Contants
+    LINE_SEGMENT : 0,
+    CHAT_MESSAGE : 1,
 }
 
 // canvas context
@@ -27,8 +30,17 @@ $(function(){
 
         // on message event
         websocketGame.socket.onmessage = function(e) {
-            console.log(e.data);
-            $("#chat-history").append("<li>"+e.data+"</li>");
+            // check if the received data is chat or line segment
+            console.log("onmessage event:",e.data);
+            var data = JSON.parse(e.data);
+            if (data.dataType === websocketGame.CHAT_MESSAGE) {
+                $("#chat-history").append("<li>" + data.sender
+                + " said: "+data.message+"</li>");
+            }
+            else if (data.dataType === websocketGame.LINE_SEGMENT) {
+                drawLine(ctx, data.startX, data.startY,
+                    data.endX, data.endY, 1);
+            }
         };
 
         $("#send").click(sendMessage);
@@ -40,7 +52,11 @@ $(function(){
 
         function sendMessage() {
             var message = $("#chat-input").val();
-            websocketGame.socket.send(message);
+            var data = {};
+            data.dataType = websocketGame.CHAT_MESSAGE;
+            data.message = message;
+            websocketGame.socket.send(JSON.stringify(data));
+
             $("#chat-input").val("");
         }
     }
@@ -64,6 +80,16 @@ $(function(){
             var mouseY = e.originalEvent.layerY || e.offsetY || 0;
             if (!(mouseX === websocketGame.startX && mouseY === websocketGame.startY)) {
                 drawLine(ctx, websocketGame.startX, websocketGame.startY,mouseX,mouseY,1);
+
+                // send the line segment to server
+                var data = {};
+                data.dataType = websocketGame.LINE_SEGMENT;
+                data.startX = websocketGame.startX;
+                data.startY = websocketGame.startY;
+                data.endX = mouseX;
+                data.endY = mouseY;
+                websocketGame.socket.send(JSON.stringify(data));
+
                 websocketGame.startX = mouseX;
                 websocketGame.startY = mouseY;
             }
