@@ -3,10 +3,15 @@
     <head>
         <meta charset="utf-8">
         <title>WebSockets demo for HTML5 Games Development: A Beginner's Guide</title>
+        <style>
+            canvas{position:relative;}
+        </style>
     </head>
 
     <body>
         <!-- game elements goes here later -->
+        <canvas id='drawing-pad' width='500' height='400'></canvas>
+
         <ul id="chat-history"></ul>
         <input type="text" id="chat-input" autocomplete="off">
         <input type="button" value="Send" id="send">
