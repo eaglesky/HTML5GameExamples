@@ -4,8 +4,9 @@ var WebSocketServer = require('ws').Server;
 var server = new WebSocketServer({ port: port });
 
 var User = require('./game').User;
-var Room = require('./game').Room;
-var room1 = new Room();
+var GameRoom = require('./game').GameRoom;
+var room1 = new GameRoom();
+
 server.on('connection', function(socket) {
     var user = new User(socket);
     room1.addUser(user);

@@ -4,9 +4,19 @@ var websocketGame = {
     // the starting point of next line drawing.
     startX : 0,
     startY : 0,
+
     // Contants
     LINE_SEGMENT : 0,
     CHAT_MESSAGE : 1,
+    GAME_LOGIC : 2,
+
+    // Constant for game logic state
+    WAITING_TO_START : 0,
+    GAME_START : 1,
+    GAME_OVER : 2,
+    GAME_RESTART : 3,
+
+    isTurnToDraw : false,
 }
 
 // canvas context
@@ -36,10 +46,30 @@ $(function(){
             if (data.dataType === websocketGame.CHAT_MESSAGE) {
                 $("#chat-history").append("<li>" + data.sender
                 + " said: "+data.message+"</li>");
-            }
-            else if (data.dataType === websocketGame.LINE_SEGMENT) {
+            } else if (data.dataType === websocketGame.LINE_SEGMENT) {
                 drawLine(ctx, data.startX, data.startY,
                     data.endX, data.endY, 1);
+            } else if (data.dataType === websocketGame.GAME_LOGIC) {
+                if (data.gameState === websocketGame.GAME_OVER) {
+                    websocketGame.isTurnToDraw = false;
+                    $("#chat-history").append("<li>" + data.winner +" wins! The answer is '"+data.answer+"'.</li>");
+                    $("#restart").show();
+                }
+                if (data.gameState === websocketGame.GAME_START) {
+                    // clear the Canvas.
+                    canvas.width = canvas.width;
+                    // hide the restart button.
+                    $("#restart").hide();
+                    // clear the chat history
+
+                    $("#chat-history").html("");
+                    if (data.isPlayerTurn) {
+                        websocketGame.isTurnToDraw = true;
+                        $("#chat-history").append("<li>Your turn to draw. Please draw '" + data.answer + "'.</li>");
+                    } else {
+                        $("#chat-history").append("<li>Game Started. Get Ready. You have one minute to guess.</li>");
+                    }
+                }
             }
         };
 
@@ -48,6 +78,20 @@ $(function(){
             if (event.keyCode === 13) {
                 sendMessage();
             }
+        });
+
+        // restart button
+        $("#restart").hide();
+        $("#restart").click(function(){
+            canvas.width = canvas.width;
+            $("#chat-history").html("");
+            $("#chat-history").append("<li>Restarting Game.</li>");
+            // pack the restart message into an object.
+            var data = {};
+            data.dataType = websocketGame.GAME_LOGIC;
+            data.gameState = websocketGame.GAME_RESTART;
+            websocketGame.socket.send(JSON.stringify(data));
+            $("#restart").hide();
         });
 
         function sendMessage() {
